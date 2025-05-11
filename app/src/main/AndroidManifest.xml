@@ -27,6 +27,11 @@
         <activity
             android:name=".MainActivity2"
             android:exported="false" />
+
+        <activity
+            android:name=".UserManagementActivity"
+            android:exported="false" />
+
         <activity
             android:name=".LoginActivity"
             android:exported="true">

@@ -23,7 +23,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
-            <RadioButton
+            <CheckBox
                 android:id="@+id/rb_option_a"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
@@ -42,7 +42,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
-            <RadioButton
+            <CheckBox
                 android:id="@+id/rb_option_b"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
@@ -61,7 +61,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
-            <RadioButton
+            <CheckBox
                 android:id="@+id/rb_option_c"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
@@ -80,7 +80,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
-            <RadioButton
+            <CheckBox
                 android:id="@+id/rb_option_d"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
@@ -107,10 +107,12 @@
         <ListView
             android:id="@+id/lv_questions"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_height="200dp"
             android:divider="?android:attr/listDivider"
-            android:dividerHeight="1dp"/>
+            android:dividerHeight="1dp"
+            android:padding="8dp"
+            android:clipToPadding="false"
+            android:scrollbars="vertical"/>
 
         <!-- 删除所有题目按钮 -->
         <Button
@@ -119,5 +121,14 @@
             android:layout_height="wrap_content"
             android:text="删除所有题目"
             android:layout_gravity="center_horizontal"/>
+        
+        <Button
+        android:id="@+id/btnUserManagement"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="用户管理"
+        android:layout_margin="16dp"/>
+    
+    
     </LinearLayout>
 </ScrollView>

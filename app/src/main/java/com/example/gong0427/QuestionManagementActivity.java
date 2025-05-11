@@ -2,6 +2,7 @@ package com.example.gong0427;
 
 import android.app.AlertDialog;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -9,10 +10,9 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import java.util.ArrayList;
@@ -42,19 +42,47 @@ public class QuestionManagementActivity extends AppCompatActivity {
                 showEditDialog(position);
             }
         });
+        
+        // 添加长按删除功能
+        lvQuestions.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                showDeleteConfirmDialog(position);
+                return true;
+            }
+        });
 
         Button btnAddQuestion = findViewById(R.id.btn_add_question);
         btnAddQuestion.setOnClickListener(v -> addQuestion());
 
         Button btnDeleteAllQuestions = findViewById(R.id.btn_delete_all_questions);
-        btnDeleteAllQuestions.setOnClickListener(v -> deleteAllQuestions());
+        btnDeleteAllQuestions.setOnClickListener(v -> showDeleteAllConfirmDialog());
 
+        Button btnUserManagement = findViewById(R.id.btnUserManagement);
+        btnUserManagement.setOnClickListener(v -> {
+            Intent intent = new Intent(QuestionManagementActivity.this, UserManagementActivity.class);
+            startActivity(intent);
+        });
+
+        // 设置CheckBox点击事件
+        setupCheckBoxes();
+        
+        // 加载题目
         loadQuestions();
-
+        
         // 如果数据库为空，则插入默认题目
         if (questionList.isEmpty()) {
             insertDefaultQuestions();
         }
+    }
+    
+    private void setupCheckBoxes() {
+        CheckBox rbOptionA = findViewById(R.id.rb_option_a);
+        CheckBox rbOptionB = findViewById(R.id.rb_option_b);
+        CheckBox rbOptionC = findViewById(R.id.rb_option_c);
+        CheckBox rbOptionD = findViewById(R.id.rb_option_d);
+        
+        // 设置点击事件，不需要特殊处理，CheckBox本身就支持点击切换
     }
 
     public void insertDefaultQuestions() {
@@ -141,7 +169,6 @@ public class QuestionManagementActivity extends AppCompatActivity {
         EditText etOptionC = findViewById(R.id.et_option_c);
         EditText etOptionD = findViewById(R.id.et_option_d);
 
-
         String questionText = etNewQuestion.getText().toString();
         if (!questionText.isEmpty()) {
             SQLiteDatabase db = dbHelper.getWritableDatabase();
@@ -149,16 +176,22 @@ public class QuestionManagementActivity extends AppCompatActivity {
             questionValues.put("question", questionText);
             long questionId = db.insert("questions", null, questionValues);
 
-            saveOption(db, questionId, etOptionA.getText().toString(), ((RadioButton)findViewById(R.id.rb_option_a)).isChecked());
-            saveOption(db, questionId, etOptionB.getText().toString(), ((RadioButton)findViewById(R.id.rb_option_b)).isChecked());
-            saveOption(db, questionId, etOptionC.getText().toString(), ((RadioButton)findViewById(R.id.rb_option_c)).isChecked());
-            saveOption(db, questionId, etOptionD.getText().toString(), ((RadioButton)findViewById(R.id.rb_option_d)).isChecked());
+            saveOption(db, questionId, etOptionA.getText().toString(), ((CheckBox)findViewById(R.id.rb_option_a)).isChecked());
+            saveOption(db, questionId, etOptionB.getText().toString(), ((CheckBox)findViewById(R.id.rb_option_b)).isChecked());
+            saveOption(db, questionId, etOptionC.getText().toString(), ((CheckBox)findViewById(R.id.rb_option_c)).isChecked());
+            saveOption(db, questionId, etOptionD.getText().toString(), ((CheckBox)findViewById(R.id.rb_option_d)).isChecked());
 
             etNewQuestion.setText("");
             etOptionA.setText("");
             etOptionB.setText("");
             etOptionC.setText("");
             etOptionD.setText("");
+            
+            // 重置CheckBox状态
+            ((CheckBox)findViewById(R.id.rb_option_a)).setChecked(false);
+            ((CheckBox)findViewById(R.id.rb_option_b)).setChecked(false);
+            ((CheckBox)findViewById(R.id.rb_option_c)).setChecked(false);
+            ((CheckBox)findViewById(R.id.rb_option_d)).setChecked(false);
 
             loadQuestions();
             Toast.makeText(this, "题目已添加", Toast.LENGTH_SHORT).show();
@@ -176,83 +209,160 @@ public class QuestionManagementActivity extends AppCompatActivity {
             db.insert("options", null, optionValues);
         }
     }
+    
+    // 显示删除单个题目的确认对话框
+    private void showDeleteConfirmDialog(final int position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("删除题目");
+        builder.setMessage("确定要删除这个题目吗？");
+        builder.setPositiveButton("确定", (dialog, which) -> {
+            deleteQuestion(position);
+        });
+        builder.setNegativeButton("取消", (dialog, which) -> dialog.dismiss());
+        builder.show();
+    }
+    
+    // 删除单个题目
+    private void deleteQuestion(int position) {
+        long questionId = idList.get(position);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        
+        // 删除题目及其选项
+        db.delete("options", "question_id = ?", new String[]{String.valueOf(questionId)});
+        db.delete("questions", "_id = ?", new String[]{String.valueOf(questionId)});
+        
+        loadQuestions();
+        Toast.makeText(this, "题目已删除", Toast.LENGTH_SHORT).show();
+    }
+    
+    // 显示删除所有题目的确认对话框
+    private void showDeleteAllConfirmDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("删除所有题目");
+        builder.setMessage("确定要删除所有题目吗？");
+        builder.setPositiveButton("确定", (dialog, which) -> {
+            deleteAllQuestions();
+        });
+        builder.setNegativeButton("取消", (dialog, which) -> dialog.dismiss());
+        builder.show();
+    }
 
     private void deleteAllQuestions() {
+        dbHelper.getWritableDatabase().delete("options", null, null);
         dbHelper.getWritableDatabase().delete("questions", null, null);
         loadQuestions();
+        Toast.makeText(this, "所有题目已删除", Toast.LENGTH_SHORT).show();
     }
 
     private void showEditDialog(final int position) {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(QuestionManagementActivity.this);
-        builder.setTitle("编辑题目");
+        try {
+            final AlertDialog.Builder builder = new AlertDialog.Builder(QuestionManagementActivity.this);
+            builder.setTitle("编辑题目");
 
-        final View dialogView = getLayoutInflater().inflate(R.layout.dialog_edit_question, null);
-        final EditText inputQuestion = dialogView.findViewById(R.id.et_edit_question);
-        final EditText inputOptionA = dialogView.findViewById(R.id.et_edit_option_a);
-        final EditText inputOptionB = dialogView.findViewById(R.id.et_edit_option_b);
-        final EditText inputOptionC = dialogView.findViewById(R.id.et_edit_option_c);
-        final EditText inputOptionD = dialogView.findViewById(R.id.et_edit_option_d);
-        final RadioButton rbOptionA = dialogView.findViewById(R.id.rb_edit_option_a);
-        final RadioButton rbOptionB = dialogView.findViewById(R.id.rb_edit_option_b);
-        final RadioButton rbOptionC = dialogView.findViewById(R.id.rb_edit_option_c);
-        final RadioButton rbOptionD = dialogView.findViewById(R.id.rb_edit_option_d);
-
-        // 加载当前题目的信息
-        Long currentQuestionId = idList.get(position);
-        Cursor cursor = dbHelper.getReadableDatabase().query(
-                "questions",
-                new String[]{"question"},
-                "_id = ?",
-                new String[]{String.valueOf(currentQuestionId)},
-                null, null, null
-        );
-        if (cursor.moveToFirst()) {
-            inputQuestion.setText(cursor.getString(0));
-        }
-        cursor.close();
-
-        cursor = dbHelper.getReadableDatabase().query(
-                "options",
-                new String[]{"option_text", "is_correct"},
-                "question_id = ?",
-                new String[]{String.valueOf(currentQuestionId)},
-                null, null, null
-        );
-        int index = 0;
-        while (cursor.moveToNext()) {
-            switch (index) {
-                case 0:
-                    inputOptionA.setText(cursor.getString(0));
-                    rbOptionA.setChecked(cursor.getInt(1) == 1);
-                    break;
-                case 1:
-                    inputOptionB.setText(cursor.getString(0));
-                    rbOptionB.setChecked(cursor.getInt(1) == 1);
-                    break;
-                case 2:
-                    inputOptionC.setText(cursor.getString(0));
-                    rbOptionC.setChecked(cursor.getInt(1) == 1);
-                    break;
-                case 3:
-                    inputOptionD.setText(cursor.getString(0));
-                    rbOptionD.setChecked(cursor.getInt(1) == 1);
-                    break;
+            // 检查布局文件是否存在
+            final View dialogView = getLayoutInflater().inflate(R.layout.dialog_edit_question, null);
+            if (dialogView == null) {
+                Toast.makeText(this, "加载编辑界面失败", Toast.LENGTH_SHORT).show();
+                return;
             }
-            index++;
+
+            final EditText inputQuestion = dialogView.findViewById(R.id.et_edit_question);
+            final EditText inputOptionA = dialogView.findViewById(R.id.et_edit_option_a);
+            final EditText inputOptionB = dialogView.findViewById(R.id.et_edit_option_b);
+            final EditText inputOptionC = dialogView.findViewById(R.id.et_edit_option_c);
+            final EditText inputOptionD = dialogView.findViewById(R.id.et_edit_option_d);
+            final CheckBox rbOptionA = dialogView.findViewById(R.id.rb_edit_option_a);
+            final CheckBox rbOptionB = dialogView.findViewById(R.id.rb_edit_option_b);
+            final CheckBox rbOptionC = dialogView.findViewById(R.id.rb_edit_option_c);
+            final CheckBox rbOptionD = dialogView.findViewById(R.id.rb_edit_option_d);
+
+            // 检查position是否有效
+            if (position < 0 || position >= idList.size()) {
+                Toast.makeText(this, "无效的题目位置", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // 加载当前题目的信息
+            Long currentQuestionId = idList.get(position);
+            SQLiteDatabase db = dbHelper.getReadableDatabase();
+            
+            try {
+                Cursor cursor = db.query(
+                        "questions",
+                        new String[]{"question"},
+                        "_id = ?",
+                        new String[]{String.valueOf(currentQuestionId)},
+                        null, null, null
+                );
+
+                if (cursor != null && cursor.moveToFirst()) {
+                    inputQuestion.setText(cursor.getString(0));
+                    cursor.close();
+                }
+
+                cursor = db.query(
+                        "options",
+                        new String[]{"option_text", "is_correct"},
+                        "question_id = ?",
+                        new String[]{String.valueOf(currentQuestionId)},
+                        null, null, null
+                );
+
+                if (cursor != null) {
+                    int index = 0;
+                    while (cursor.moveToNext() && index < 4) {
+                        String optionText = cursor.getString(0);
+                        boolean isCorrect = cursor.getInt(1) == 1;
+
+                        switch (index) {
+                            case 0:
+                                inputOptionA.setText(optionText);
+                                rbOptionA.setChecked(isCorrect);
+                                break;
+                            case 1:
+                                inputOptionB.setText(optionText);
+                                rbOptionB.setChecked(isCorrect);
+                                break;
+                            case 2:
+                                inputOptionC.setText(optionText);
+                                rbOptionC.setChecked(isCorrect);
+                                break;
+                            case 3:
+                                inputOptionD.setText(optionText);
+                                rbOptionD.setChecked(isCorrect);
+                                break;
+                        }
+                        index++;
+                    }
+                    cursor.close();
+                }
+            } catch (Exception e) {
+                Toast.makeText(this, "加载题目数据失败：" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            builder.setView(dialogView);
+            builder.setPositiveButton("保存", (dialog, which) -> {
+                try {
+                    updateQuestion(position,
+                            inputQuestion.getText().toString(),
+                            inputOptionA.getText().toString(), rbOptionA.isChecked(),
+                            inputOptionB.getText().toString(), rbOptionB.isChecked(),
+                            inputOptionC.getText().toString(), rbOptionC.isChecked(),
+                            inputOptionD.getText().toString(), rbOptionD.isChecked());
+                } catch (Exception e) {
+                    Toast.makeText(this, "保存失败：" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+            builder.setNegativeButton("取消", (dialog, which) -> dialog.cancel());
+            builder.setNeutralButton("删除", (dialog, which) -> {
+                showDeleteConfirmDialog(position);
+            });
+
+            builder.show();
+        } catch (Exception e) {
+            Toast.makeText(this, "显示编辑对话框失败：" + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
-        cursor.close();
-
-        builder.setView(dialogView);
-        builder.setPositiveButton("保存", (dialog, which) -> {
-            updateQuestion(position, inputQuestion.getText().toString(),
-                    inputOptionA.getText().toString(), rbOptionA.isChecked(),
-                    inputOptionB.getText().toString(), rbOptionB.isChecked(),
-                    inputOptionC.getText().toString(), rbOptionC.isChecked(),
-                    inputOptionD.getText().toString(), rbOptionD.isChecked());
-        });
-        builder.setNegativeButton("取消", (dialog, which) -> dialog.cancel());
-
-        builder.show();
     }
 
     private void updateQuestion(int position, String updatedQuestion,
