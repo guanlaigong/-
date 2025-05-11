@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- 题目输入框 -->
+    <EditText
+        android:id="@+id/et_edit_question"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="输入题目"
+        android:padding="16dp"
+        android:layout_marginBottom="8dp"/>
+
+    <!-- 选项A -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <RadioButton
+            android:id="@+id/rb_edit_option_a"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <EditText
+            android:id="@+id/et_edit_option_a"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:hint="选项A"
+            android:padding="16dp"
+            android:layout_marginBottom="8dp"/>
+    </LinearLayout>
+
+    <!-- 选项B -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <RadioButton
+            android:id="@+id/rb_edit_option_b"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <EditText
+            android:id="@+id/et_edit_option_b"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:hint="选项B"
+            android:padding="16dp"
+            android:layout_marginBottom="8dp"/>
+    </LinearLayout>
+
+    <!-- 选项C -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <RadioButton
+            android:id="@+id/rb_edit_option_c"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <EditText
+            android:id="@+id/et_edit_option_c"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:hint="选项C"
+            android:padding="16dp"
+            android:layout_marginBottom="8dp"/>
+    </LinearLayout>
+
+    <!-- 选项D -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <RadioButton
+            android:id="@+id/rb_edit_option_d"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <EditText
+            android:id="@+id/et_edit_option_d"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:hint="选项D"
+            android:padding="16dp"
+            android:layout_marginBottom="8dp"/>
+    </LinearLayout>
+</LinearLayout>

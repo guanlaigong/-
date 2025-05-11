@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:gravity="center"
+    android:background="#FFFFFF">
+
+    <!-- 标题 -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="注册页面"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:textColor="#333333"
+        android:gravity="center"
+        android:layout_marginBottom="24dp"/>
+
+    <!-- 用户名输入框 -->
+    <EditText
+        android:id="@+id/et_username"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:hint="请输入用户名"
+        android:inputType="text"
+        android:background="@drawable/edittext_border"
+        android:padding="12dp"
+        android:textSize="16sp"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- 密码输入框 -->
+    <EditText
+        android:id="@+id/et_password"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:hint="请输入密码"
+        android:inputType="textPassword"
+        android:background="@drawable/edittext_border"
+        android:padding="12dp"
+        android:textSize="16sp"
+        android:layout_marginBottom="24dp"/>
+
+    <RadioGroup
+        android:id="@+id/rg_register_type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="16dp">
+
+        <RadioButton
+            android:id="@+id/rb_register_user"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="注册用户"
+            android:checked="true"/>
+
+        <RadioButton
+            android:id="@+id/rb_register_admin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="注册管理员"
+            android:layout_marginLeft="24dp"/>
+    </RadioGroup>
+    <!-- 注册按钮 -->
+    <Button
+        android:id="@+id/btn_register"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="注册"
+        android:textSize="18sp"
+        android:textColor="#FFFFFF"
+        android:background="@drawable/button_rounded"
+        android:layout_marginBottom="16dp"/>
+
+</LinearLayout>
