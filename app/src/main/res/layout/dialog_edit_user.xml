@@ -5,6 +5,28 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+    <RadioGroup
+        android:id="@+id/rgUserType"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="16dp">
+
+        <RadioButton
+            android:id="@+id/rbNormalUser"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="普通用户"
+            android:checked="true"/>
+
+        <RadioButton
+            android:id="@+id/rbAdmin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="管理员"
+            android:layout_marginLeft="16dp"/>
+    </RadioGroup>
+
     <EditText
         android:id="@+id/etUsername"
         android:layout_width="match_parent"

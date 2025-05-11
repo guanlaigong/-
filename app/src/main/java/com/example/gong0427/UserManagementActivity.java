@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
@@ -57,6 +58,7 @@ public class UserManagementActivity extends AppCompatActivity {
         View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_edit_user, null);
         EditText etUsername = dialogView.findViewById(R.id.etUsername);
         EditText etPassword = dialogView.findViewById(R.id.etPassword);
+        RadioGroup rgUserType = dialogView.findViewById(R.id.rgUserType);
 
         new AlertDialog.Builder(this)
             .setTitle("添加用户")
@@ -64,8 +66,15 @@ public class UserManagementActivity extends AppCompatActivity {
             .setPositiveButton("确定", (dialog, which) -> {
                 String username = etUsername.getText().toString();
                 String password = etPassword.getText().toString();
+                
+                // 根据选择的用户类型添加前缀
+                boolean isAdmin = rgUserType.getCheckedRadioButtonId() == R.id.rbAdmin;
+                String prefixedUsername = isAdmin ? "admin_" + username : "user_" + username;
+                
                 if (!username.isEmpty() && !password.isEmpty()) {
-                    addUser(username, password);
+                    addUser(prefixedUsername, password);
+                } else {
+                    Toast.makeText(this, "用户名和密码不能为空", Toast.LENGTH_SHORT).show();
                 }
             })
             .setNegativeButton("取消", null)
